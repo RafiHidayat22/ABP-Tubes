@@ -202,7 +202,7 @@ php artisan serve --host=0.0.0.0 --port=8000
 ### Base URL
 
 ```
-http://localhost:8000/api/v1
+http://localhost:8000/api/powerestimation
 ```
 
 ### Endpoints
@@ -217,7 +217,7 @@ http://localhost:8000/api/v1
 
 ### 1. CREATE - Membuat Kalkulasi Baru
 
-**Endpoint**: `POST /api/v1/solar-calculations`
+**Endpoint**: `POST /api/powerestimation/solar-calculations`
 
 **Request Headers**:
 ```
@@ -294,7 +294,7 @@ Accept: application/json
 
 ### 2. READ ALL - Mendapatkan Semua Data
 
-**Endpoint**: `GET /api/v1/solar-calculations`
+**Endpoint**: `GET /api/powerestimation/solar-calculations`
 
 **Query Parameters** (opsional):
 - `page`: Nomor halaman (default: 1)
@@ -302,21 +302,21 @@ Accept: application/json
 
 **Example**:
 ```
-GET /api/v1/solar-calculations?page=1&per_page=20
+GET /api/powerestimation/solar-calculations?page=1&per_page=20
 ```
 
 ### 3. READ ONE - Mendapatkan Data Spesifik
 
-**Endpoint**: `GET /api/v1/solar-calculations/{id}`
+**Endpoint**: `GET /api/powerestimation/solar-calculations/{id}`
 
 **Example**:
 ```
-GET /api/v1/solar-calculations/1
+GET /api/powerestimation/solar-calculations/1
 ```
 
 ### 4. UPDATE - Update Data
 
-**Endpoint**: `PUT /api/v1/solar-calculations/{id}`
+**Endpoint**: `PUT /api/powerestimation/solar-calculations/{id}`
 
 **Request Body** (semua field opsional):
 ```json
@@ -328,11 +328,11 @@ GET /api/v1/solar-calculations/1
 
 ### 5. DELETE - Hapus Data
 
-**Endpoint**: `DELETE /api/v1/solar-calculations/{id}`
+**Endpoint**: `DELETE /api/powerestimation/solar-calculations/{id}`
 
 **Example**:
 ```
-DELETE /api/v1/solar-calculations/1
+DELETE /api/powerestimation/solar-calculations/1
 ```
 
 ### Error Responses
@@ -398,7 +398,7 @@ DELETE /api/v1/solar-calculations/1
 
 **Create:**
 ```bash
-curl -X POST http://localhost:8000/api/v1/solar-calculations \
+curl -X POST http://localhost:8000/api/powerestimation/solar-calculations \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{
@@ -409,19 +409,19 @@ curl -X POST http://localhost:8000/api/v1/solar-calculations \
 
 **Read All:**
 ```bash
-curl -X GET http://localhost:8000/api/v1/solar-calculations \
+curl -X GET http://localhost:8000/api/powerestimation/solar-calculations \
   -H "Accept: application/json"
 ```
 
 **Read One:**
 ```bash
-curl -X GET http://localhost:8000/api/v1/solar-calculations/1 \
+curl -X GET http://localhost:8000/api/powerestimation/solar-calculations/1 \
   -H "Accept: application/json"
 ```
 
 **Update:**
 ```bash
-curl -X PUT http://localhost:8000/api/v1/solar-calculations/1 \
+curl -X PUT http://localhost:8000/api/powerestimation/solar-calculations/1 \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{
@@ -431,7 +431,7 @@ curl -X PUT http://localhost:8000/api/v1/solar-calculations/1 \
 
 **Delete:**
 ```bash
-curl -X DELETE http://localhost:8000/api/v1/solar-calculations/1 \
+curl -X DELETE http://localhost:8000/api/powerestimation/solar-calculations/1 \
   -H "Accept: application/json"
 ```
 
@@ -439,7 +439,7 @@ curl -X DELETE http://localhost:8000/api/v1/solar-calculations/1 \
 
 1. Import collection dari file `postman_collection.json` (jika tersedia)
 2. Set environment variable:
-   - `base_url`: http://localhost:8000/api/v1
+   - `base_url`: http://localhost:8000/api/powerestimation
 3. Jalankan request sesuai kebutuhan
 
 ### Unit Testing (Opsional)
