@@ -51,14 +51,17 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
-    // Products 
+    // Products (Admin only)
     Route::post('/products', [ProductController::class, 'store']);
 
     // Cart
-    Route::get('/cart', [CartController::class, 'index']);
-    Route::post('/cart', [CartController::class, 'store']);
-    Route::put('/cart/{id}', [CartController::class, 'update']);
-    Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+Route::get('/cart', [CartController::class, 'index']);
+Route::post('/cart', [CartController::class, 'store']);
+Route::put('/cart/{id}', [CartController::class, 'update']);
+Route::post('/cart/{id}/increment', [CartController::class, 'increment']);  // BARU
+Route::post('/cart/{id}/decrement', [CartController::class, 'decrement']);  // BARU
+Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+Route::delete('/cart', [CartController::class, 'clear']);  // BARU
 
     // Orders
     Route::get('/orders', [OrderController::class, 'index']);

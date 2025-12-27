@@ -24,7 +24,8 @@ class CartController extends Controller
             'success' => true,
             'data' => [
                 'items' => $carts,
-                'total' => $total
+                'total' => $total,
+                'total_items' => $carts->sum('quantity')
             ]
         ]);
     }
@@ -50,7 +51,16 @@ class CartController extends Controller
             ->first();
 
         if ($cart) {
-            $cart->quantity += $validated['quantity'];
+            $newQuantity = $cart->quantity + $validated['quantity'];
+            
+            if ($product->stock < $newQuantity) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Insufficient stock. Available stock: ' . $product->stock
+                ], 400);
+            }
+            
+            $cart->quantity = $newQuantity;
             $cart->save();
         } else {
             $cart = Cart::create([
@@ -87,7 +97,7 @@ class CartController extends Controller
         if ($cart->product->stock < $validated['quantity']) {
             return response()->json([
                 'success' => false,
-                'message' => 'Insufficient stock'
+                'message' => 'Insufficient stock. Available stock: ' . $cart->product->stock
             ], 400);
         }
 
@@ -95,7 +105,69 @@ class CartController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Cart updated',
+            'message' => 'Cart updated successfully',
+            'data' => $cart->load('product')
+        ]);
+    }
+
+    public function increment(Request $request, $id)
+    {
+        $cart = Cart::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$cart) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cart item not found'
+            ], 404);
+        }
+
+        $newQuantity = $cart->quantity + 1;
+
+        if ($cart->product->stock < $newQuantity) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot add more. Available stock: ' . $cart->product->stock
+            ], 400);
+        }
+
+        $cart->increment('quantity');
+        $cart->refresh();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Quantity increased',
+            'data' => $cart->load('product')
+        ]);
+    }
+
+    public function decrement(Request $request, $id)
+    {
+        $cart = Cart::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$cart) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cart item not found'
+            ], 404);
+        }
+
+        if ($cart->quantity <= 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Quantity cannot be less than 1. Use delete endpoint to remove item.'
+            ], 400);
+        }
+
+        $cart->decrement('quantity');
+        $cart->refresh();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Quantity decreased',
             'data' => $cart->load('product')
         ]);
     }
@@ -113,11 +185,23 @@ class CartController extends Controller
             ], 404);
         }
 
+        $productName = $cart->product->name;
         $cart->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Cart item removed'
+            'message' => "{$productName} removed from cart"
+        ]);
+    }
+
+    public function clear(Request $request)
+    {
+        $deleted = Cart::where('user_id', $request->user()->id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cart cleared successfully',
+            'deleted_items' => $deleted
         ]);
     }
 }
