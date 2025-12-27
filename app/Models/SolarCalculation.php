@@ -10,6 +10,7 @@ class SolarCalculation extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id', // TAMBAHKAN INI
         'address',
         'latitude',
         'longitude',
@@ -36,5 +37,13 @@ class SolarCalculation extends Model
         'monthly_energy_production' => 'decimal:2',
         'yearly_energy_production' => 'decimal:2',
         'nasa_data' => 'array',
+        'created_at' => 'datetime', // TAMBAHKAN INI
+        'updated_at' => 'datetime', // TAMBAHKAN INI
     ];
+
+    // TAMBAHKAN RELASI INI
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

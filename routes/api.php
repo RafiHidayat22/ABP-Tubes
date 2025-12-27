@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\SolarCalculationController;
+use App\Http\Controllers\Api\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProductController;
@@ -42,6 +43,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // Auth
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
+
+    // Dashboard Routes - BARU
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/home', [DashboardController::class, 'home']);
+        Route::get('/statistics', [DashboardController::class, 'statistics']);
+        Route::get('/recent-calculations', [DashboardController::class, 'recentCalculations']);
+    });
 
     // Power estimation
     Route::prefix('powerestimation')->group(function () {

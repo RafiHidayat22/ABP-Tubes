@@ -26,9 +26,11 @@ class SolarCalculationController extends Controller
      * Display a listing of the resource.
      * GET /api/solar-calculations
      */
-    public function index()
+    public function index(Request $request)
     {
-        $calculations = SolarCalculation::orderBy('created_at', 'desc')->paginate(10);
+        $calculations = SolarCalculation::where('user_id', $request->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         return response()->json([
             'success' => true,
@@ -109,6 +111,7 @@ class SolarCalculationController extends Controller
 
         // Simpan ke database
         $solarCalculation = SolarCalculation::create([
+            'user_id' => $request->user()->id, // TAMBAHAN BARU
             'address' => $request->address,
             'latitude' => $latitude,
             'longitude' => $longitude,
@@ -144,9 +147,12 @@ class SolarCalculationController extends Controller
      * Display the specified resource.
      * GET /api/solar-calculations/{id}
      */
-    public function show($id)
+    public function show($id, Request $request)
     {
-        $calculation = SolarCalculation::find($id);
+        // PERUBAHAN: Filter berdasarkan user_id
+        $calculation = SolarCalculation::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->first();
 
         if (!$calculation) {
             return response()->json([
@@ -177,7 +183,10 @@ class SolarCalculationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $calculation = SolarCalculation::find($id);
+        // PERUBAHAN: Filter berdasarkan user_id
+        $calculation = SolarCalculation::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->first();
 
         if (!$calculation) {
             return response()->json([
@@ -287,9 +296,12 @@ class SolarCalculationController extends Controller
      * Remove the specified resource from storage.
      * DELETE /api/solar-calculations/{id}
      */
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
-        $calculation = SolarCalculation::find($id);
+        // PERUBAHAN: Filter berdasarkan user_id
+        $calculation = SolarCalculation::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->first();
 
         if (!$calculation) {
             return response()->json([
@@ -303,6 +315,35 @@ class SolarCalculationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Data berhasil dihapus',
+        ], 200);
+    }
+
+    /**
+     * Get financial metrics for a calculation
+     * GET /api/solar-calculations/{id}/financial
+     */
+    public function getFinancialMetrics($id, Request $request)
+    {
+        $calculation = SolarCalculation::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$calculation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
+
+        $financialMetrics = $this->solarCalculationService->calculateFinancialMetrics(
+            $calculation->max_power_capacity,
+            $calculation->yearly_energy_production
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Financial metrics berhasil dihitung',
+            'data' => $financialMetrics,
         ], 200);
     }
 }
