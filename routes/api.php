@@ -25,10 +25,9 @@ Route::get('/health', function () {
 // Midtrans webhook (public)
 Route::post('/webhook/midtrans', [OrderController::class, 'webhook']);
 
-// Product routes (public)
+// Public product routes
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
-
 
 // Public auth routes
 Route::prefix('auth')->group(function () {
@@ -38,33 +37,37 @@ Route::prefix('auth')->group(function () {
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 });
 
-// Protected routes (require authentication)
+// Authenticated routes (user biasa)
 Route::middleware('auth:sanctum')->group(function () {
-    // Authenticated user info & logout
+    // Auth
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
 
-    // Power estimation routes (now protected)
+    // Power estimation
     Route::prefix('powerestimation')->group(function () {
         Route::apiResource('solar-calculations', SolarCalculationController::class);
         Route::get('solar-calculations/{id}/financial', [SolarCalculationController::class, 'getFinancialMetrics']);
     });
 
-
-    // Products (Admin only)
-    Route::post('/products', [ProductController::class, 'store']);
-
     // Cart
-Route::get('/cart', [CartController::class, 'index']);
-Route::post('/cart', [CartController::class, 'store']);
-Route::put('/cart/{id}', [CartController::class, 'update']);
-Route::post('/cart/{id}/increment', [CartController::class, 'increment']);  // BARU
-Route::post('/cart/{id}/decrement', [CartController::class, 'decrement']);  // BARU
-Route::delete('/cart/{id}', [CartController::class, 'destroy']);
-Route::delete('/cart', [CartController::class, 'clear']);  // BARU
+    Route::get('/cart', [CartController::class, 'index']);
+    Route::post('/cart', [CartController::class, 'store']);
+    Route::put('/cart/{id}', [CartController::class, 'update']);
+    Route::post('/cart/{id}/increment', [CartController::class, 'increment']);
+    Route::post('/cart/{id}/decrement', [CartController::class, 'decrement']);
+    Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+    Route::delete('/cart', [CartController::class, 'clear']);
 
     // Orders
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{id}', [OrderController::class, 'show']);
     Route::post('/checkout', [OrderController::class, 'checkout']);
+});
+
+// Admin-only routes
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+    // Product management (admin only)
+    Route::post('/products', [ProductController::class, 'store']);
+    Route::put('/products/{id}', [ProductController::class, 'update']);
+    Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 });

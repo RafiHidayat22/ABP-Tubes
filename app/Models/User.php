@@ -17,6 +17,7 @@ class User extends Authenticatable implements CanResetPassword
         'name',
         'email',
         'password',
+        'role',
     ];
 
     protected $hidden = [
@@ -33,4 +34,13 @@ class User extends Authenticatable implements CanResetPassword
     {
         $this->notify(new ResetPasswordNotification($token));
     }
+    public function isAdmin()
+{
+    return $this->role === 'admin';
+}
+
+public function isUser()
+{
+    return $this->role === 'true'; // atau cukup return !$this->isAdmin() jika hanya ada 2 role
+}
 }
